@@ -1,25 +1,25 @@
-// ìµœëŒ€ í•œë„ì˜ ì‚¬íƒ• ì‚¬ê¸°
+// ÃÖ´ë ÇÑµµÀÇ »çÅÁ »ç±â
 
 #include <iostream>
 
 using namespace std;
 
 int main() {
-	int money; // í˜„ì¬ ê°€ì§€ê³  ìˆëŠ” ëˆ
-	int candy_price; // ìº”ë””ì˜ ê°€ê²©
+	int money; // ÇöÀç °¡Áö°í ÀÖ´Â µ·
+	int candy_price; // ÄµµğÀÇ °¡°İ
 	
-	cout << "í˜„ì¬ ê°€ì§€ê³  ìˆëŠ” ëˆ : ";
+	cout << "ÇöÀç °¡Áö°í ÀÖ´Â µ· : ";
 	cin >> money;
-	cout << "ìº”ë””ì˜ ê°€ê²© : " ;
+	cout << "ÄµµğÀÇ °¡°İ : " ;
 	cin >> candy_price;
-
-	// ìµœëŒ€í•œ ì‚´ ìˆ˜ ìˆëŠ” ì‚¬íƒ•ì˜ ìˆ˜ 
+ 
+	// ÃÖ´ëÇÑ »ì ¼ö ÀÖ´Â »çÅÁÀÇ ¼ö 
 	int n_candies = money / candy_price;
-	cout << "ìµœëŒ€ë¡œ ì‚´ ìˆ˜ ìˆëŠ” ìº”ë””ì˜ ê°œìˆ˜ : " << n_candies << endl;
+	cout << "ÃÖ´ë·Î »ì ¼ö ÀÖ´Â ÄµµğÀÇ °³¼ö : " << n_candies << endl;
 
-	// ì‚¬íƒ•ì„ êµ¬ì…í•˜ê³  ë‚¨ì€ ëˆ
+	// »çÅÁÀ» ±¸ÀÔÇÏ°í ³²Àº µ·
 	int change = money % candy_price;
-	cout << "ìº”ë”” êµ¬ì… í›„ ë‚¨ì€ ëˆ : " << change << endl;
+	cout << "Äµµğ ±¸ÀÔ ÈÄ ³²Àº µ· : " << change << endl; 
 
 	return 0;
 }
