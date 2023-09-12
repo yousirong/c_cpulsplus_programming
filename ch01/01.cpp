@@ -23,3 +23,8 @@ int main() {
 
 	return 0;
 }
+ 
+
+//  ºôµå Ctrl + Alt + C > save and comfilr for C/C++
+
+// ½ÇÇà Ctrl + Alt + R > execute
