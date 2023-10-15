@@ -50,7 +50,7 @@ void Cal_grades() {
 	int Total_Stu = students.size(); // 총 학생 수를 얻습니다.
 
 	for (auto& student : students) {
-			if (student.absen > 16) {
+			if (student.absen > 16) {  // 결석 일 수 16일 넘기면 F
 				student.Total_sc = student.score - 2 * student.absen;
 				student.grade = "F";
 			} else {
@@ -59,7 +59,7 @@ void Cal_grades() {
 		if (student.grade != "F") { // 학생이 이미 F 학점을 받은 경우 등급을 다시 계산하지 않습니다.
 			int rank = cal_rank(student.Total_sc); // 학생의 등수를 얻습니다.
 
-			// 등급 계산 규칙에 따라 등급을 설정합니다.
+			// 등급 계산 학점 기준에 따라 등급을 설정합니다.
 			if (rank <= round(Total_Stu * 0.1))
 				student.grade = "A+";
 			else if (rank <= floor(Total_Stu * 0.25))
@@ -82,9 +82,9 @@ void Cal_grades() {
 
 // 학생들을 finalScore와 id에 따라 버블 정렬하는 함수
 void bubble_sort_sc() {
-	int n = students.size();
+	int n = students.size();  // 학생수 
 
-	for (int i = 0; i < n - 1; i++) {
+	for (int i = 0; i < n - 1; i++) {  // for 구문 두개와 swap함수로 버블 정렬 구현
 		for (int j = 0; j < n - i - 1; j++) {
 			if (students[j].Total_sc < students[j + 1].Total_sc) {
 				swap(students[j], students[j + 1]);
@@ -129,17 +129,17 @@ int main() {
 
 2. 입력으로 학생의 수 n명을 받고, 각 학생의 학번, 시험 점수, 결석 일수를 입력받아 Student 객체를 생성하고 이를 벡터에 저장
 
-3. Cal_grades 함수를 사용하여 학생들의 등급을 계산합니다. 이 함수는 학생의 등수를 계산하고 주어진 규칙에 따라 학점을 설정합니다.
+3. Cal_grades 함수를 사용하여 학생들의 등급을 계산 후 함수는 학생의 등수를 계산하고 주어진 규칙에 따라 학점을 설정
 
-4. `bubble_sort_sc` 함수를 사용하여 학생들을 최종 점수와 학번에 따라 버블 정렬하여 정렬합니다.
+4. bubble_sort_sc 함수를 사용하여 학생들을 최종 점수와 학번에 따라 버블 정렬하여 정렬
 
-5. `prt_res` 함수를 사용하여 학생들의 정보를 출력합니다.
+5. `prt_res` 함수를 사용하여 학생들의 정보를 출력
 
-6. 학점 계산에 필요한 규칙에 따라 등급을 부여합니다. 등급은 학생 수의 백분율에 따라 부여되며, 점수가 같을 경우 학번이 낮은 학생이 우선됩니다.
+6. 학점 계산에 필요한 규칙에 따라 등급을 부여합니다. 등급은 학생 수의 백분율에 따라 부여되며, 점수가 같을 경우 학번이 낮은 학생이 우선
 
-7. 학생의 최종 점수가 결석일수에 따라 계산되며, 결석일수가 16 이상인 경우 학점이 F로 설정됩니다.
+7. 학생의 최종 점수가 결석일수에 따라 계산되며, 결석일수가 16 이상인 경우 학점이 F로 설정
 
-8. 마지막으로, 모든 학생의 정보와 학점이 출력됩니다.
+8. 마지막으로, 모든 학생의 정보와 학점이 출력
 
-이렇게 작성된 프로그램은 주어진 입력에 따라 학생들의 최종 점수와 학점을 계산하고 정렬하여 출력할 것입니다.
+이렇게 작성된 프로그램은 주어진 입력에 따라 학생들의 최종 점수와 학점을 계산하고 정렬하여 출력한다.
 */
