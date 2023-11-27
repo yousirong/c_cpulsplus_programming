@@ -1,0 +1,289 @@
+#include <iostream>
+#include <cassert>
+#include <stdexcept>
+using namespace std;
+
+class Bunsu
+{
+private:
+	int bunja;
+	int bunmo;
+	int gcd(int n, int m); // compute the greatest common bunmo of two integer values
+	void normalize(); // place the fraction in least common bunmo form
+public:
+	Bunsu(); // Constructs a fraction with bunja 0 and bunmo 1
+	Bunsu(int t); // Constructs a fraction with bunja t and bunmo 1, @param t the bunja for the fraction
+	Bunsu(int t, int b); // Constructs a fraction with given bunja and bunmo, @param t the initial bunja, @param b the initial bunmo
+
+	int getBunja() const; // Returns the bunja value
+	int getBunmo() const; // Return the bunmo value
+	int compare(const Bunsu& right) const; // compare one fraction value to another, result is negative if less than right, zero if equal, and positive if greater than right
+
+	Bunsu& operator+=(const Bunsu& right); // updates a fraction by adding in another fraction value
+	Bunsu& operator++(); // increment fraction by 1(prefix form)
+	Bunsu operator++(int unused); // increment fraction by 1(postfix form)
+	operator double() const; // converts a fraction into a floating-point value
+};
+
+Bunsu operator+(const Bunsu& left, const Bunsu& right);
+Bunsu operator-(const Bunsu& left, const Bunsu& right);
+Bunsu operator*(const Bunsu& left, const Bunsu& right);
+Bunsu operator/(const Bunsu& left, const Bunsu& right);
+Bunsu operator-(const Bunsu& value);
+
+bool operator<(const Bunsu& left, const Bunsu& right);
+bool operator<=(const Bunsu& left, const Bunsu& right);
+bool operator==(const Bunsu& left, const Bunsu& right);
+bool operator!=(const Bunsu& left, const Bunsu& right);
+bool operator>=(const Bunsu& left, const Bunsu& right);
+bool operator>(const Bunsu& left, const Bunsu& right);
+
+ostream& operator<<(ostream& out, const Bunsu& value);
+istream& operator>>(istream& in, Bunsu& r);
+
+int Bunsu::gcd(int n, int m) // Euclids Greatest Common Divisor algorithm.
+{
+	assert((n > 0) && (m > 0));
+	while (n != m)
+	{
+		if(n < m) m -= n;
+		else n -= m;
+	}
+	return n;
+}
+
+Bunsu::Bunsu() : bunja(0), bunmo(1)
+{
+	// 0/1 을 저장
+	
+}
+
+Bunsu::Bunsu(int t) : bunja(t), bunmo(1)
+{
+	// t/1 을 저장
+	
+}
+
+Bunsu::Bunsu(int t, int b): bunja(t), bunmo(b)
+{
+	// 약분된 형태의 분수가 최종 저장되어야 함
+	 normalize(); 
+}
+
+int Bunsu::getBunja() const
+{
+	return bunja;
+}
+
+int Bunsu::getBunmo() const
+{
+	return bunmo;
+}
+
+void Bunsu::normalize() // Normalize fraction by (a) moving sign to bunja, (b) ensuring bunja and bunmo have no common divisors
+{
+	// gcd 함수 활용(분모가 0이 있는 경우나, 분모나 분자가 음수인 경우를 모두 고려해야함)
+	 if (bunmo == 0) {
+        throw std::invalid_argument("분모는 0이 될 수 없습니다.");
+    }
+
+    if (bunmo < 0) {
+        bunja = -bunja;
+        bunmo = -bunmo;
+    }
+
+    int g = gcd(abs(bunja), abs(bunmo));
+    bunja /= g;
+    bunmo /= g;
+}
+
+Bunsu operator+(const Bunsu& left, const Bunsu& right)
+{
+	// 두 인자(분수)를 더한 결과를 반환하는 함수
+	int newBunja = left.getBunja() * right.getBunmo() + right.getBunja() * left.getBunmo();
+	int newBunmo = left.getBunmo() * right.getBunmo();
+	return Bunsu(newBunja, newBunmo);
+}
+
+Bunsu operator-(const Bunsu& left, const Bunsu& right)
+{
+	// 두 인자(분수)를 빼준(첫번째분수-두번째분수) 결과를 반환하는 함수
+	int newBunja = left.getBunja() * right.getBunmo() - right.getBunja() * left.getBunmo();
+	int newBunmo = left.getBunmo() * right.getBunmo();
+	return Bunsu(newBunja, newBunmo);
+}
+
+Bunsu operator*(const Bunsu& left, const Bunsu& right)
+{
+	// 두 인자(분수)를 곱한 결과를 반환하는 함수
+	int newBunja = left.getBunja() * right.getBunja();
+	int newBunmo = left.getBunmo() * right.getBunmo();
+	return Bunsu(newBunja, newBunmo);
+}
+
+Bunsu operator/(const Bunsu& left, const Bunsu& right)
+{
+	// 두 인자(분수)를 나눈(첫번째분수/두번째분수) 결과를 반환하는 함수
+	int newBunja = left.getBunja() * right.getBunmo();
+	int newBunmo = left.getBunmo() * right.getBunja();
+	return Bunsu(newBunja, newBunmo);
+}
+
+
+Bunsu operator-(const Bunsu& value)
+{
+	// 인자(분수)에 -1을 곱한 결과를 반환하는 함수
+	return Bunsu(-value.getBunja(), value.getBunmo());
+}
+
+int Bunsu::compare(const Bunsu& right) const
+{
+	// 호출한 객체와 인자의 차이를 반환하는 함수(호출한 객체가 크면 양수, 작으면 음수, 같으면 0 반환)
+	int leftBunja = this->bunja * right.bunmo;
+	int rightBunja = this->bunmo * right.bunja;
+
+	return leftBunja - rightBunja;
+}
+
+bool operator<(const Bunsu& left, const Bunsu& right)
+{
+	// 첫번째분수가 두번째분수 보다 작은지를 판단하여 결과를 반환하는 함수
+	return left.getBunja() * right.getBunmo() < right.getBunja() * left.getBunmo();
+}
+
+bool operator<=(const Bunsu& left, const Bunsu& right)
+{
+	// 첫번째분수가 두번째분수 보다 작거나 같은지를 판단하여 결과를 반환하는 함수
+	return left.getBunja() * right.getBunmo() <= right.getBunja() * left.getBunmo();
+}
+
+bool operator==(const Bunsu& left, const Bunsu& right)
+{
+	// 첫번째분수가 두번째분수와 같은지를 판단하여 결과를 반환하는 함수
+	return left.getBunja() * right.getBunmo() == right.getBunja() * left.getBunmo();
+}
+
+bool operator!=(const Bunsu& left, const Bunsu& right)
+{
+	// 첫번째분수가 두번째분수와 다른지를 판단하여 결과를 반환하는 함수
+	return left.getBunja() * right.getBunmo() != right.getBunja() * left.getBunmo();
+}
+
+bool operator>=(const Bunsu& left, const Bunsu& right)
+{
+	// 첫번째분수가 두번째분수 보다 크거나 같은지를 판단하여 결과를 반환하는 함수
+	return left.getBunja() * right.getBunmo() >= right.getBunja() * left.getBunmo();
+}
+
+bool operator>(const Bunsu& left, const Bunsu& right)
+{
+	// 첫번째분수가 두번째분수 보다 큰지를 판단하여 결과를 반환하는 함수
+	return left.getBunja() * right.getBunmo() > right.getBunja() * left.getBunmo();
+}
+
+ostream& operator<<(ostream& out, const Bunsu& value)
+{
+	out << value.getBunja() << "/" << value.getBunmo();
+	return out;
+}
+
+istream& operator>>(istream& in, Bunsu& r)
+{
+	int t, b;
+	// Read the top
+	in >> t;
+	// If there is a slash, read the next number
+	char c;
+	in >> c;
+	if(c == '/')	
+	{
+		in >> b;
+	}
+	else
+	{
+		in.putback(c);
+		b = 1;
+	}
+	r = Bunsu(t, b);
+	return in;
+}
+
+Bunsu::operator double() const // convert numerator to double, then divide
+{
+	return static_cast<double>(bunja) / bunmo;
+}
+
+Bunsu& Bunsu::operator++()
+{
+	// 호출한 객체(분수)에 1을 더한 결과를 반환하는 함수
+	bunja += bunmo;
+	return *this;
+}
+
+Bunsu Bunsu::operator++(int unused)
+{
+	// 호출한 객체(분수)에 1을 더한 결과를 반환하는 함수
+	Bunsu clone(bunja, bunmo);
+	bunja += bunmo;
+	return clone;
+}
+
+Bunsu& Bunsu::operator+=(const Bunsu& right)
+{
+	// 호출한 객체(분수)에 인자(분수)를 더한 결과를 반환하는 함수
+	*this = *this + right;
+    return *this;
+}
+
+int main()
+{
+	// Test constructors
+	Bunsu a; // Value is 0/1
+	Bunsu b(4); // Value is 4/1
+	Bunsu c(6, 8); // Value is 6/8, which is converted to 3/4
+	Bunsu d(c); // Value is copy of c, also 3/4
+	cout << "Constructed values " << a << " " << b << " " << c << endl;
+	cout << "Value of d is " << d.getBunja() << "/" << d.getBunmo() << endl;
+
+	// Test arithmetic instructions
+	d = b + c;
+	cout << "4 + 3/4 is " << d << endl;
+	d = b - c;
+	cout << "4 - 3/4 is " << d << endl;
+
+	Bunsu e = (b + (-c));
+	cout << "Done with negation" << endl;
+	if(d == e) cout << "Subtraction test successful" << endl;
+	else cout << "Subtraction test failed" << endl;
+
+	a = Bunsu(6,8);
+	b = Bunsu(7,8);
+	if(a < b) cout << "Compare successful" << endl;
+	else cout << "Compare failed" << endl;
+
+	Bunsu h = 0;
+
+	for(int i=1; i<=30; ++i)
+	{
+		h += Bunsu(1, i);
+		cout << " 1/1+...+1/" << i << " = " << h << endl;
+	}
+	cout << " 1/1+...+1/30 = " << h << endl;
+
+	return 0;
+}
+/*
+문제의 정의 : 이 문제는 분수(fraction)를 표현하고, 이에 대한 기본적인 수학 연산(덧셈, 뺄셈, 곱셈, 나눗셈)과 비교 연산을 수행하는 Bunsu 클래스를 구현하는 것입니다. Bunsu 클래스는 분수를 분자(bunja)와 분모(bunmo)로 나타내며, 분수 간 연산 및 분수의 정규화(normalization)를 지원합니다. 또한, 분수를 다른 데이터 타입으로 변환하고, 사용자로부터 분수를 입력받거나 출력하는 기능도 포함합니다.
+
+문제의 해결 방안 : 분수의 표현: Bunsu 클래스는 분자(bunja)와 분모(bunmo)를 이용하여 분수를 표현합니다. 분자와 분모는 정수(int) 타입입니다.
+
+분수의 정규화: normalize 함수를 통해 분수를 간단한 형태로 약분합니다. 이 과정에서 분모가 0이 되지 않도록 하며, 음수 처리도 고려합니다.
+
+기본 수학 연산: 덧셈(operator+), 뺄셈(operator-), 곱셈(operator*), 나눗셈(operator/) 연산자 오버로딩을 통해 분수 간의 연산을 구현합니다. 이러한 연산은 분수의 규칙을 따릅니다.
+
+비교 연산: 두 분수를 비교하는 연산자(<, <=, ==, !=, >=, >)를 오버로딩하여 구현합니다. 이는 분자의 확장과 비교를 통해 이루어집니다.
+
+입출력 연산: ostream과 istream을 오버로딩하여 분수의 출력 및 입력을 지원합니다.
+
+기타 기능: 분수를 double 타입으로 변환하는 연산자, 분수의 증가(operator++) 및 덧셈 갱신(operator+=) 연산을 구현합니다.
+*/
