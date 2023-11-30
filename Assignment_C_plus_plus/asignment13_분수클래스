@@ -83,50 +83,50 @@ int Bunsu::getBunmo() const
 void Bunsu::normalize() // Normalize fraction by (a) moving sign to bunja, (b) ensuring bunja and bunmo have no common divisors
 {
 	// gcd 함수 활용(분모가 0이 있는 경우나, 분모나 분자가 음수인 경우를 모두 고려해야함)
-	 if (bunmo == 0) {
-        throw std::invalid_argument("분모는 0이 될 수 없습니다.");
+	 if (bunmo ==0) {
+        throw invalid_argument("분모는 0이 될 수 없습니다.");
     }
 
-    if (bunmo < 0) {
-        bunja = -bunja;
-        bunmo = -bunmo;
+    if (bunmo<0) {
+			bunja = -bunja;
+			bunmo = -bunmo;
     }
 
-    int g = gcd(abs(bunja), abs(bunmo));
-    bunja /= g;
-    bunmo /= g;
+	int g= gcd(abs(bunja),abs(bunmo));
+	bunja/= g;
+	bunmo /=g;
 }
 
 Bunsu operator+(const Bunsu& left, const Bunsu& right)
 {
 	// 두 인자(분수)를 더한 결과를 반환하는 함수
-	int newBunja = left.getBunja() * right.getBunmo() + right.getBunja() * left.getBunmo();
-	int newBunmo = left.getBunmo() * right.getBunmo();
-	return Bunsu(newBunja, newBunmo);
+	int N_Bja = left.getBunja() * right.getBunmo() + right.getBunja() * left.getBunmo();
+	int N_Bmo = left.getBunmo() * right.getBunmo();
+	return Bunsu(N_Bja, N_Bmo);
 }
 
 Bunsu operator-(const Bunsu& left, const Bunsu& right)
 {
 	// 두 인자(분수)를 빼준(첫번째분수-두번째분수) 결과를 반환하는 함수
-	int newBunja = left.getBunja() * right.getBunmo() - right.getBunja() * left.getBunmo();
-	int newBunmo = left.getBunmo() * right.getBunmo();
-	return Bunsu(newBunja, newBunmo);
+	int N_Bja = left.getBunja() * right.getBunmo() - right.getBunja() * left.getBunmo();
+	int N_Bmo = left.getBunmo() * right.getBunmo();
+	return Bunsu(N_Bja, N_Bmo);
 }
 
 Bunsu operator*(const Bunsu& left, const Bunsu& right)
 {
 	// 두 인자(분수)를 곱한 결과를 반환하는 함수
-	int newBunja = left.getBunja() * right.getBunja();
-	int newBunmo = left.getBunmo() * right.getBunmo();
-	return Bunsu(newBunja, newBunmo);
+	int N_Bja = left.getBunja() * right.getBunja();
+	int N_Bmo = left.getBunmo() * right.getBunmo();
+	return Bunsu(N_Bja, N_Bmo);
 }
 
 Bunsu operator/(const Bunsu& left, const Bunsu& right)
 {
 	// 두 인자(분수)를 나눈(첫번째분수/두번째분수) 결과를 반환하는 함수
-	int newBunja = left.getBunja() * right.getBunmo();
-	int newBunmo = left.getBunmo() * right.getBunja();
-	return Bunsu(newBunja, newBunmo);
+	int N_Bja = left.getBunja() * right.getBunmo();
+	int N_Bmo = left.getBunmo() * right.getBunja();
+	return Bunsu(N_Bja, N_Bmo);
 }
 
 
@@ -262,7 +262,6 @@ int main()
 	else cout << "Compare failed" << endl;
 
 	Bunsu h = 0;
-
 	for(int i=1; i<=30; ++i)
 	{
 		h += Bunsu(1, i);
@@ -273,9 +272,9 @@ int main()
 	return 0;
 }
 /*
-문제의 정의 : 이 문제는 분수(fraction)를 표현하고, 이에 대한 기본적인 수학 연산(덧셈, 뺄셈, 곱셈, 나눗셈)과 비교 연산을 수행하는 Bunsu 클래스를 구현하는 것입니다. Bunsu 클래스는 분수를 분자(bunja)와 분모(bunmo)로 나타내며, 분수 간 연산 및 분수의 정규화(normalization)를 지원합니다. 또한, 분수를 다른 데이터 타입으로 변환하고, 사용자로부터 분수를 입력받거나 출력하는 기능도 포함합니다.
+문제의 정의 : 이 문제는 분수를 표현하고, 이에 대한 기본적인 수학 연산(덧셈, 뺄셈, 곱셈, 나눗셈)과 비교 연산을 수행하는 Bunsu 클래스를 구현하는 것입니다. Bunsu 클래스는 분수를 분자(bunja)와 분모(bunmo)로 나타내며, 분수 간 연산 및 분수의 정규화를 지원합니다. 또한, 분수를 다른 데이터 타입으로 변환하고, 사용자로부터 분수를 입력받거나 출력하는 기능도 포함하는것이 문제의 정의입니다.
 
-문제의 해결 방안 : 분수의 표현: Bunsu 클래스는 분자(bunja)와 분모(bunmo)를 이용하여 분수를 표현합니다. 분자와 분모는 정수(int) 타입입니다.
+문제의 해결 방안 : 분수의 표현: Bunsu 클래스는 분자(bunja)와 분모(bunmo)를 이용하여 분수를 표현합니다. 분자와 분모는 정수 타입입니다.
 
 분수의 정규화: normalize 함수를 통해 분수를 간단한 형태로 약분합니다. 이 과정에서 분모가 0이 되지 않도록 하며, 음수 처리도 고려합니다.
 

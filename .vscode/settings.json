@@ -42,7 +42,8 @@
         "sstream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "asignment13_분수클래스": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
