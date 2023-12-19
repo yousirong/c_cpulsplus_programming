@@ -1,0 +1,430 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm> // <algorithm> 헤더 추가
+#include <iomanip>
+using namespace std;
+class Passenger {
+public:
+    int survived;
+    int pClass;
+    string sex;
+    float fare;
+
+    Passenger(int s, int pc, string sx, float f)
+        : survived(s), pClass(pc), sex(sx), fare(f) {}
+
+    // Overload << operator to print Passenger information
+    friend ostream& operator<<(
+ostream& os, const Passenger& passenger) {
+        os << passenger.survived << " " << passenger.pClass << " " << passenger.sex << " " << passenger.fare;
+        return os;
+    }
+};
+
+class TitanicData {
+private:
+vector<Passenger> passengers;
+
+public:
+    TitanicData(const string& filename) {
+        // Read data from CSV file
+        
+ifstream file(filename);
+        int s, pc;
+        
+string sx;
+        float f;
+        while (file >> s >> pc >> sx >> f) {
+            passengers.emplace_back(s, pc, sx, f);
+        }
+        file.close();
+    }
+
+    // Calculate and print the results
+    void calculateResults() const {
+        printSexRatio();
+        printClassRatio();
+        printSexClassRatio();
+        printAvgFareBySex();
+        printAvgFareByClass();
+        printAvgFareBySexClass();
+        printHighestFarePassenger();
+        printLowestFarePassenger();
+        printSurvivalRatioBySex();
+        printSurvivalRatioByClass();
+        printSurvivalRatioBySexClass();
+    }
+
+private:
+    // Helper functions for result calculations
+    float calculateRatio(int count, int total) const {
+        return static_cast<float>(count) / total * 100.0;
+    }
+
+    float calculateAvgFare(const vector<Passenger>& subset) const {
+        if (subset.empty()) return 0.0;
+        float sum = 0.0;
+        for (const auto& passenger : subset) {
+            sum += passenger.fare;
+        }
+        return sum / subset.size();
+    }
+
+    float calculateSurvivalRatio(const vector<Passenger>& subset) const {
+        if (subset.empty()) return 0.0;
+        int survivedCount = 0;
+        for (const auto& passenger : subset) {
+            if (passenger.survived == 1) survivedCount++;
+        }
+        return calculateRatio(survivedCount, subset.size());
+    }
+
+    void printSexRatio() const {
+        int maleCount = 0, femaleCount = 0;
+        for (const auto& passenger : passengers) {
+            if (passenger.sex == "male") maleCount++;
+            else if (passenger.sex == "female") femaleCount++;
+        }
+        float maleRatio = calculateRatio(maleCount, passengers.size());
+        float femaleRatio = calculateRatio(femaleCount, passengers.size());
+
+        
+cout << "male : " << 
+fixed << 
+setprecision(4) << maleRatio << "%" << 
+endl;
+        
+cout << "female : " << 
+fixed << 
+setprecision(4) << femaleRatio << "%" << 
+endl;
+    }
+
+    void printClassRatio() const {
+        int firstClassCount = 0, secondClassCount = 0, thirdClassCount = 0;
+        for (const auto& passenger : passengers) {
+            if (passenger.pClass == 1) firstClassCount++;
+            else if (passenger.pClass == 2) secondClassCount++;
+            else if (passenger.pClass == 3) thirdClassCount++;
+        }
+        float firstClassRatio = calculateRatio(firstClassCount, passengers.size());
+        float secondClassRatio = calculateRatio(secondClassCount, passengers.size());
+        float thirdClassRatio = calculateRatio(thirdClassCount, passengers.size());
+
+        
+cout << "first class : " << 
+fixed << 
+setprecision(4) << firstClassRatio << "%" << 
+endl;
+        
+cout << "second class : " << 
+fixed << 
+setprecision(4) << secondClassRatio << "%" << 
+endl;
+        
+cout << "third class : " << 
+fixed << 
+setprecision(4) << thirdClassRatio << "%" << 
+endl;
+    }
+
+    void printSexClassRatio() const {
+        int maleFirstClassCount = 0, maleSecondClassCount = 0, maleThirdClassCount = 0;
+        int femaleFirstClassCount = 0, femaleSecondClassCount = 0, femaleThirdClassCount = 0;
+
+        for (const auto& passenger : passengers) {
+            if (passenger.sex == "male") {
+                if (passenger.pClass == 1) maleFirstClassCount++;
+                else if (passenger.pClass == 2) maleSecondClassCount++;
+                else if (passenger.pClass == 3) maleThirdClassCount++;
+            }
+            else if (passenger.sex == "female") {
+                if (passenger.pClass == 1) femaleFirstClassCount++;
+                else if (passenger.pClass == 2) femaleSecondClassCount++;
+                else if (passenger.pClass == 3) femaleThirdClassCount++;
+            }
+        }
+
+        float maleFirstClassRatio = calculateRatio(maleFirstClassCount, passengers.size());
+        float maleSecondClassRatio = calculateRatio(maleSecondClassCount, passengers.size());
+        float maleThirdClassRatio = calculateRatio(maleThirdClassCount, passengers.size());
+
+        float femaleFirstClassRatio = calculateRatio(femaleFirstClassCount, passengers.size());
+        float femaleSecondClassRatio = calculateRatio(femaleSecondClassCount, passengers.size());
+        float femaleThirdClassRatio = calculateRatio(femaleThirdClassCount, passengers.size());
+
+        
+cout << "male first class : " << 
+fixed << 
+setprecision(4) << maleFirstClassRatio << "%" << 
+endl;
+        
+cout << "male second class : " << 
+fixed << 
+setprecision(4) << maleSecondClassRatio << "%" << 
+endl;
+        
+cout << "male third class : " << 
+fixed << 
+setprecision(4) << maleThirdClassRatio << "%" << 
+endl;
+
+        
+cout << "female first class : " << 
+fixed << 
+setprecision(4) << femaleFirstClassRatio << "%" << 
+endl;
+        
+cout << "female second class : " << 
+fixed << 
+setprecision(4) << femaleSecondClassRatio << "%" << 
+endl;
+        
+cout << "female third class : " << 
+fixed << 
+setprecision(4) << femaleThirdClassRatio << "%" << 
+endl;
+    }
+
+    void printAvgFareBySex() const {
+        vector<Passenger> malePassengers, femalePassengers;
+        for (const auto& passenger : passengers) {
+            if (passenger.sex == "male") malePassengers.push_back(passenger);
+            else if (passenger.sex == "female") femalePassengers.push_back(passenger);
+        }
+        float maleAvgFare = calculateAvgFare(malePassengers);
+        float femaleAvgFare = calculateAvgFare(femalePassengers);
+
+        
+cout << "male's average fare : " << 
+fixed << 
+setprecision(4) << maleAvgFare << 
+endl;
+        
+cout << "female's average fare : " << 
+fixed << 
+setprecision(4) << femaleAvgFare << 
+endl;
+    }
+
+    void printAvgFareByClass() const {
+        vector<Passenger> firstClassPassengers, secondClassPassengers, thirdClassPassengers;
+        for (const auto& passenger : passengers) {
+            if (passenger.pClass == 1) firstClassPassengers.push_back(passenger);
+            else if (passenger.pClass == 2) secondClassPassengers.push_back(passenger);
+            else if (passenger.pClass == 3) thirdClassPassengers.push_back(passenger);
+        }
+        float firstClassAvgFare = calculateAvgFare(firstClassPassengers);
+        float secondClassAvgFare = calculateAvgFare(secondClassPassengers);
+        float thirdClassAvgFare = calculateAvgFare(thirdClassPassengers);
+
+        
+cout << "first class's average fare : " << 
+fixed << 
+setprecision(4) << firstClassAvgFare << 
+endl;
+        
+cout << "second class's average fare : " << 
+fixed << 
+setprecision(4) << secondClassAvgFare << 
+endl;
+        
+cout << "third class's average fare : " << 
+fixed << 
+setprecision(4) << thirdClassAvgFare << 
+endl;
+    }
+
+    void printAvgFareBySexClass() const {
+        vector<Passenger> maleFirstClass, maleSecondClass, maleThirdClass;
+        
+vector<Passenger> femaleFirstClass, femaleSecondClass, femaleThirdClass;
+
+        for (const auto& passenger : passengers) {
+            if (passenger.sex == "male") {
+                if (passenger.pClass == 1) maleFirstClass.push_back(passenger);
+                else if (passenger.pClass == 2) maleSecondClass.push_back(passenger);
+                else if (passenger.pClass == 3) maleThirdClass.push_back(passenger);
+            }
+            else if (passenger.sex == "female") {
+                if (passenger.pClass == 1) femaleFirstClass.push_back(passenger);
+                else if (passenger.pClass == 2) femaleSecondClass.push_back(passenger);
+                else if (passenger.pClass == 3) femaleThirdClass.push_back(passenger);
+            }
+        }
+
+        float maleFirstClassAvgFare = calculateAvgFare(maleFirstClass);
+        float maleSecondClassAvgFare = calculateAvgFare(maleSecondClass);
+        float maleThirdClassAvgFare = calculateAvgFare(maleThirdClass);
+
+        float femaleFirstClassAvgFare = calculateAvgFare(femaleFirstClass);
+        float femaleSecondClassAvgFare = calculateAvgFare(femaleSecondClass);
+        float femaleThirdClassAvgFare = calculateAvgFare(femaleThirdClass);
+
+        
+cout << "male first class's average fare : " << 
+fixed << 
+setprecision(4) << maleFirstClassAvgFare << 
+endl;
+        
+cout << "male second class's average fare : " << 
+fixed << 
+setprecision(4) << maleSecondClassAvgFare << 
+endl;
+        
+cout << "male third class's average fare : " << 
+fixed << 
+setprecision(4) << maleThirdClassAvgFare << 
+endl;
+
+        
+cout << "female first class's average fare : " << 
+fixed << 
+setprecision(4) << femaleFirstClassAvgFare << 
+endl;
+        
+cout << "female second class's average fare : " << 
+fixed << 
+setprecision(4) << femaleSecondClassAvgFare << 
+endl;
+        
+cout << "female third class's average fare : " << 
+fixed << 
+setprecision(4) << femaleThirdClassAvgFare << 
+endl;
+    }
+
+    void printHighestFarePassenger() const {
+        auto maxFarePassenger = 
+max_element(passengers.begin(), passengers.end(), [](const Passenger& p1, const Passenger& p2) {
+                return p1.fare < p2.fare;
+            });
+
+        
+    cout << *maxFarePassenger << 
+endl;
+    }
+
+    void printLowestFarePassenger() const {
+        auto minFarePassenger = 
+min_element(passengers.begin(), passengers.end(),
+            [](const Passenger& p1, const Passenger& p2) {
+                return p1.fare > p2.fare && p2.fare > 0; // Exclude fares with 0
+            });
+
+        
+    cout << *minFarePassenger << 
+endl;
+    }
+
+    void printSurvivalRatioBySex() const {
+        vector<Passenger> malePassengers, femalePassengers;
+        for (const auto& passenger : passengers) {
+            if (passenger.sex == "male") malePassengers.push_back(passenger);
+            else if (passenger.sex == "female") femalePassengers.push_back(passenger);
+        }
+        float maleSurvivalRatio = calculateSurvivalRatio(malePassengers);
+        float femaleSurvivalRatio = calculateSurvivalRatio(femalePassengers);
+
+        
+cout << "male's survived : " << 
+fixed << 
+setprecision(4) << maleSurvivalRatio << "%" << 
+endl;
+        
+cout << "female's survived : " << 
+fixed << 
+setprecision(4) << femaleSurvivalRatio << "%" << 
+endl;
+    }
+
+   void printSurvivalRatioByClass() const {
+    vector<Passenger> firstClassPassengers, secondClassPassengers, thirdClassPassengers;
+    for (const auto& passenger : passengers) {
+        if (passenger.pClass == 1) firstClassPassengers.push_back(passenger);
+        else if (passenger.pClass == 2) secondClassPassengers.push_back(passenger);
+        else if (passenger.pClass == 3) thirdClassPassengers.push_back(passenger);
+    }
+    float firstClassSurvivalRatio = calculateSurvivalRatio(firstClassPassengers);
+    float secondClassSurvivalRatio = calculateSurvivalRatio(secondClassPassengers);
+    float thirdClassSurvivalRatio = calculateSurvivalRatio(thirdClassPassengers);
+
+    cout << "first class's survived : " << fixed << setprecision(4) << firstClassSurvivalRatio << "%" << endl;
+    cout << "second class's survived : " << fixed << setprecision(4) << secondClassSurvivalRatio << "%" << endl;
+    cout << "third class's survived : " << fixed << setprecision(4) << thirdClassSurvivalRatio << "%" << endl;
+}
+
+
+    void printSurvivalRatioBySexClass() const {
+        vector<Passenger> maleFirstClass, maleSecondClass, maleThirdClass;
+        
+vector<Passenger> femaleFirstClass, femaleSecondClass, femaleThirdClass;
+
+        for (const auto& passenger : passengers) {
+            if (passenger.sex == "male") {
+                if (passenger.pClass == 1) maleFirstClass.push_back(passenger);
+                else if (passenger.pClass == 2) maleSecondClass.push_back(passenger);
+                else if (passenger.pClass == 3) maleThirdClass.push_back(passenger);
+            }
+            else if (passenger.sex == "female") {
+                if (passenger.pClass == 1) femaleFirstClass.push_back(passenger);
+                else if (passenger.pClass == 2) femaleSecondClass.push_back(passenger);
+                else if (passenger.pClass == 3) femaleThirdClass.push_back(passenger);
+            }
+        }
+
+        float maleFirstClassSurvivalRatio = calculateSurvivalRatio(maleFirstClass);
+        float maleSecondClassSurvivalRatio = calculateSurvivalRatio(maleSecondClass);
+        float maleThirdClassSurvivalRatio = calculateSurvivalRatio(maleThirdClass);
+
+        float femaleFirstClassSurvivalRatio = calculateSurvivalRatio(femaleFirstClass);
+        float femaleSecondClassSurvivalRatio = calculateSurvivalRatio(femaleSecondClass);
+        float femaleThirdClassSurvivalRatio = calculateSurvivalRatio(femaleThirdClass);
+
+        
+cout << "male first class's survived : " << 
+fixed << 
+setprecision(4) << maleFirstClassSurvivalRatio << "%" << 
+endl;
+        
+cout << "male second class's survived : " << 
+fixed << 
+setprecision(4) << maleSecondClassSurvivalRatio << "%" << 
+endl;
+        
+cout << "male third class's survived : " << 
+fixed << 
+setprecision(4) << maleThirdClassSurvivalRatio << "%" << 
+endl;
+
+        
+cout << "female first class's survived : " << 
+fixed << 
+setprecision(4) << femaleFirstClassSurvivalRatio << "%" << 
+endl;
+        
+cout << "female second class's survived : " << 
+fixed << 
+setprecision(4) << femaleSecondClassSurvivalRatio << "%" << 
+endl;
+        
+cout << "female third class's survived : " << 
+fixed << 
+setprecision(4) << femaleThirdClassSurvivalRatio << "%" << 
+endl;
+    }
+};
+
+int main() {
+    // 데이터 파일 경로
+    string file_path = "data/titanic.csv";
+
+    // TitanicData 클래스 인스턴스 생성
+    TitanicData titanicData(file_path);
+
+    // 결과 계산 및 출력
+    titanicData.calculateResults();
+
+    return 0;
+}
